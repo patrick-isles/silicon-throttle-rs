@@ -1,0 +1,26 @@
+[Unit]
+Description=Linux CPU PROCHOT Clock-Stretching & Silicon Thermal Sentinel
+Documentation=https://github.com/patrick-isles/silicon-throttle-rs
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/silicon-throttle-rs --daemon --port 9112 --interval 1.0
+Restart=always
+RestartSec=5s
+
+# Hardened Security Sandboxing
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/sys/devices/system/cpu /sys/class/hwmon /sys/class/thermal
+PrivateTmp=true
+CapabilityBoundingSet=CAP_SYS_ADMIN
+AmbientCapabilities=CAP_SYS_ADMIN
+
+# Resource Limits
+MemoryMax=64M
+CPUQuota=10%
+
+[Install]
+WantedBy=multi-user.target
